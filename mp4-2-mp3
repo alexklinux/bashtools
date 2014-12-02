@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Set here your dir with mp4 files:
+MP4DIR="${HOME}/MP4vMP3/"
+
+if [ ! -d "$MP4DIR" ] ; then
+    echo "Set correct MP4DIR variable in script"
+    exit 1
+fi
+
+pushd $MP4DIR
+for i in ${MP4DIR}*.mp4; do
+    base_name=`basename "$i" .mp4`
+    new_mp3_name="${base_name}.mp3"
+    echo "MP4 name=$i \n basename of mp4=${base_name} \n new mp3 name=${new_mp3_name}"
+
+    if [ ! -f "${new_mp3_name}" ] ; then
+	avconv -i "$i" -vn -acodec libmp3lame -ac 2 -ab 160k -ar 48000 "${new_mp3_name}"
+	result=$?
+	echo "res=$result"
+	if [ "$result" == "0" ] ; then
+	    rm -f "$i"
+	fi
+    fi
+done
+popd
